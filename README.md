@@ -166,24 +166,70 @@ ns.preprod IN A     10.16.10.3
 
 ![image](https://github.com/user-attachments/assets/75abba4f-5c93-46c2-9b7f-f8b560e3b441)
 
+## Création un fichier de zone pour preprod.nuage :
 
-
-
+On cree un nouveau fichier de zone pour preprod.nuage,  for.preprod.nuage, avec les enregistrements pour web.preprod.nuage et le serveur de noms ns.preprod.nuage.
 
 ![image](https://github.com/user-attachments/assets/424e83b7-0201-4aa8-aa59-220d10df1271)
 
+## Activation DNSSEC pour preprod.nuage :
 
+On génére des clés DNSSEC pour la zone déléguée preprod.nuage :
+
+```bash
+sudo dnssec-keygen -a RSASHA256 -b 2048 -n ZONE preprod.nuage
+sudo dnssec-keygen -a RSASHA256 -b 1024 -n ZONE -f KSK preprod.nuage
+```
 
 ![image](https://github.com/user-attachments/assets/84682e5c-47f7-4063-b780-f16ba1609d30)
 
+Inclure les clés DNSKEY dans for.preprod.nuage :
+
+```bash
+$INCLUDE "Kpreprod.nuage.+008+37597>.key"
+$INCLUDE "Kpreprod.nuage.+008+01969>.key"
+```
+
+Signer la zone preprod.nuage :
+
+```bash
+sudo dnssec-signzone -A -o preprod.nuage -N INCREMENT -f /etc/bind/for.preprod.nuage.signed /etc/bind/for.preprod.nuage
+```
 
 ![image](https://github.com/user-attachments/assets/00ad4696-df29-44f8-af10-3eae6e005399)
 
+Mettre à jour la configuration de BIND pour la zone déléguée dans named.conf.local :
+
+```bash
+zone "preprod.nuage" {
+  type master;
+  file "/etc/bind/for.preprod.nuage.signed";
+};
+```
 
 ![image](https://github.com/user-attachments/assets/816acadd-43a9-407b-9598-cd8c75420fb3)
 
+## Redémarrer le service BIND :
+
+```bash
+sudo systemctl restart bind9
+```
+
+## On Vérifie la configuration DNSSEC de preprod.nuage avec dig :
+
+```bash
+dig @localhost web.preprod.nuage +dnssec
+```
 
 ![image](https://github.com/user-attachments/assets/ed5ad31f-c291-45c8-8f65-6b119d6ef16d)
+
+# Limites de cette sécurisation et compléments pour une mise en œuvre complète
+
+Limites de DNSSEC :
+
+- Complexité de gestion des clés : La rotation régulière des clés (ZSK et KSK) est nécessaire pour maintenir la sécurité, ce qui ajoute de la complexité.
+- Pas de confidentialité : DNSSEC garantit l'authenticité et l'intégrité des enregistrements DNS, mais les données restent en clair et ne sont pas chiffrées.
+- Risque de mauvaise configuration : Une erreur dans la configuration ou la gestion des clés DNSSEC peut entraîner des pannes de résolution DNS, rendant les domaines inaccessibles.
 
 
 
