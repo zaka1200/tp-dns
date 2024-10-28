@@ -19,7 +19,6 @@ On test sur DNSViz les domaines suivants
   - L'analyse des serveurs DNS du domaine univ-amu.fr a révélé qu'ils ne répondaient pas aux requêtes UDP, comme l'indique l'erreur : "The server(s) were not responsive to queries over UDP." Ce problème peut être causé par une surcharge du serveur, une mauvaise configuration ou une restriction au niveau du pare-feu. Conformément à la RFC 1035, section 4.2, l'absence de réponse aux requêtes DNS en UDP peut entraîner des problèmes de connectivité et de résolution de noms.
   - www.lis-lab.fr
   - L'analyse du domaine a montré une absence de réponse lors de la requête des enregistrements DNSKEY, révélant que le serveur à l'adresse IP 192.33.4.12 n'a pas répondu via UDP malgré quatre tentatives.
-  - L'analyse du domaine a montré une absence de réponse lors de la requête des enregistrements DNSKEY, révélant que le serveur à l'adresse IP 192.33.4.12 n'a pas répondu via UDP malgré quatre tentatives.
 
 ## Analyse
 
